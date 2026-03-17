@@ -74,18 +74,16 @@ async def main():
     for w in windows:
         sh, sm = map(int, w["start"].split(":"))
         eh, em = map(int, w["end"].split(":"))
-        # 跨日窗口在 end 时刻触发（数据已积累完毕）
-        trigger_h, trigger_m = (eh, em) if (sh, sm) > (eh, em) else (sh, sm)
+        # 所有窗口统一在 end 时刻触发（数据积累完毕后处理）
         scheduler.add_job(
             run_window,
-            CronTrigger(hour=trigger_h, minute=trigger_m, timezone=tz_name),
+            CronTrigger(hour=eh, minute=em, timezone=tz_name),
             args=[w, tz, args.config, args.output_dir],
             id=f"window_{w['name']}",
             misfire_grace_time=300,
             max_instances=1,
         )
-        trigger_time = w["end"] if (sh, sm) > (eh, em) else w["start"]
-        logging.info(f"Scheduled [{w['name']}] at {trigger_time} {tz_name}")
+        logging.info(f"Scheduled [{w['name']}] at {w['end']} {tz_name}")
     scheduler.start()
     logging.info(f"Scheduler running with {len(windows)} window(s). Ctrl+C to stop.")
     try:

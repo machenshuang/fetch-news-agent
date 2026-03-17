@@ -22,14 +22,21 @@ class EmailNotifier:
         self.subject_template = cfg.get("subject_template", "每日财经分析报告 - {date}")
 
     def notify(self, report_paths: List[str], date: datetime,
-               window_name: str | None = None) -> None:
+               window_name: str | None = None,
+               time_start: datetime | None = None,
+               time_end: datetime | None = None) -> None:
         if not self.to_addresses:
             logger.warning("No recipients configured, skipping email")
             return
 
+        time_range = ""
+        if time_start and time_end:
+            time_range = f"{time_start.strftime('%H:%M')}-{time_end.strftime('%H:%M')}"
+
         subject = self.subject_template.format(
             date=date.strftime("%Y-%m-%d"),
             window=window_name or "",
+            time_range=time_range,
         ).strip()
         plain_body = self._build_body(report_paths)
         html_body = self._build_html_body(report_paths)

@@ -126,7 +126,8 @@ async def run_pipeline(
         notifier = EmailNotifier(config)
         try:
             analysis_paths = [p for p in paths if "analysis" in p]
-            notifier.notify(analysis_paths if analysis_paths else paths, date, window_name=window_name)
+            notifier.notify(analysis_paths if analysis_paths else paths, date,
+                            window_name=window_name, time_start=time_start, time_end=time_end)
         except Exception as e:
             msg = f"Notifier error: {e}"
             logger.exception(msg)
