@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
 import yaml
-from dotenv import load_dotenv
 
 from analyzer.gemini_analyzer import GeminiAnalyzer
 from fetchers.base import Article
@@ -26,7 +25,6 @@ class PipelineResult:
 
 
 def load_config(config_path: str = "config/config.yaml") -> dict:
-    load_dotenv()
     with open(config_path, "r", encoding="utf-8") as f:
         content = f.read()
 
